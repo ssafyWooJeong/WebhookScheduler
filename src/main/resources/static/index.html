@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Webhook Scheduler</title>
+</head>
+<body>
+Method GET is not allowed. <br/><br/>
+
+<strong>[POST]</strong> <br/>
+/event/once <br/>
+{ <br/>
+"date" : "2023-12-31 08:30", <br/>
+"message" : "message", <br/>
+"url" : "web hook url" <br/>
+} <br/>
+
+<strong>[POST]</strong> <br/>
+/event/repeat <br/>
+{ <br/>
+"until" : "2023-12-31", <br/>
+"message" : "Message Here", <br/>
+"hour" : 18, <br/>
+"minute" : 31, <br/>
+"url" : "WEB HOOK URL", <br/>
+"disableOnHoliday" : true, <br/>
+"cron" : <strong>NULLABLE -> check below </strong><br/>
+} <br/>
+<br/>
+both return id(int) <br/>
+to remove it <br/><br/>
+
+position of day's bit<br/>
+<table>
+    <tr>
+        <td>SUN</td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>MON</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>TUE</td>
+        <td>2</td>
+    </tr>
+    <tr>
+        <td>WED</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>THU</td>
+        <td>4</td>
+    </tr>
+    <tr>
+        <td>FRI</td>
+        <td>5</td>
+    </tr>
+    <tr>
+        <td>SAT</td>
+        <td>6</td>
+    </tr>
+</table>
+
+If you want to repeat MON, WED, FRI<br/>
+insert 42 to cron.<br/>
+MON -> bit pos 1 -> 0b10<br/>
+WED -> bit pos 3 -> 0b1000<br/>
+FRI -> bit pos 5 -> 0b100000<br/>
+0b10 | 0b1000 | 0b100000 -> 0b101010 -> 42<br/>
+<br/>
+If you want to repeat weekday (Mon to Fri)<br/>
+don't insert cron value.<br/>
+(If cron is 0, assume it as null)<br/>
+<br/>
+If you want to repeat every day(even Sunday and Saturday)<br/>
+insert 0b1111111 (127) to cron.<br/>
+<br/>
+
+If you want to except Holiday (Admin need to insert holiday DB by self)<br/>
+set disalbeOnHoliday true (default)<br/>
+or if you want to repeat on holiday too, set it false<br/>
+
+<br/>
+[DELETE] <br/>
+/event/once/{id} <br/>
+/event/repeat/{id} <br/>
+<br/>
+You can delete the event by 'DELETE' request with id(path variable)<br/>
+</body>
+<style>
+    table, th, td {
+        border: 1px solid black
+    }
+</style>
+</html>

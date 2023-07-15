@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD-Mapper 3.0//EN"
+        "http://mybatis.org/schema/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webhook.webhookscheduler.event.mapper.EventMapper">
+    <select id="isHoliday" resultType="boolean">
+        select count(*) from holiday where date = curdate()
+    </select>
+    <delete id="dropOutDatedEvent">
+        delete from event where date &lt; curdate();
+        delete from repeat_event where until &lt; curdate()
+    </delete>
+    <select id="eventList" resultType="EventDto">
+        select * from event
+    </select>
+    <select id="repeatList" resultType="RepeatEventDto">
+        select * from repeat_event
+    </select>
+    <insert id="insertEvent" parameterType="EventDto">
+        insert into event (id, date, message, url) values (#{id}, #{date}, #{message}, #{url})
+    </insert>
+    <insert id="insertRepeatEvent" parameterType="RepeatEventDto">
+        insert into repeat_event (id, until, hour, minute, message, url, disableOnHoliday, cron) values (#{id},
+        #{until}, #{hour}, #{minute}, #{message}, #{url}, #{disableOnHoliday}, #{cron})
+    </insert>
+
+    <delete id="deleteEvent" parameterType="int">
+        delete from event where id = #{id}
+    </delete>
+    <delete id="deleteRepeatEvent" parameterType="int">
+        delete from repeat_event where id = #{id}
+    </delete>
+
+    <select id="checkEventIdAvailable" parameterType="int">
+        select !count(*) from event where id = #{id}
+    </select>
+    <select id="checkRepeatEventIdAvailable" parameterType="int">
+        select !count(*) from repeat_event where id = #{id}
+    </select>
+</mapper>
